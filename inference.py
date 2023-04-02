@@ -21,6 +21,9 @@ parser.add_argument("--lora_dir", default="alpaca_lora", required=False,
 parser.add_argument("--prompt", default="I think the meaning of life is", required=False,
     help="Prompt for model inference. Default: %(default)s"
 )
+parser.add_argument("--n_tokens", default=200, type=int, help="Number of tokens to generate. Default: %(default)s")
+parser.add_argument("--temp", default=0.7, type=float, help="Temperature. Default: %(default)s")
+parser.add_argument("--top_p", default=0.95, type=float, help="Top_p. Default: %(default)s")
 args = vars(parser.parse_args())
 
 config_path = args['config_dir']
@@ -51,9 +54,9 @@ with torch.no_grad():
     generated = model.generate(inputs=batch["input_ids"],
                                do_sample=True, use_cache=True,
                                repetition_penalty=1.1,
-                               max_new_tokens=200,
-                               temperature=0.9,
-                               top_p=0.95,
+                               max_new_tokens=args["n_tokens"],
+                               temperature=args["temp"],
+                               top_p=args["top_p"],
                             #    top_k=40,
                                top_k=20000,
                                return_dict_in_generate=True,
