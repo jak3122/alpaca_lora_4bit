@@ -1,10 +1,32 @@
 import os
 import sys
+import argparse
 import time
 import torch
 from autograd_4bit import load_llama_model_4bit_low_ram, Autograd4bitQuantLinear
-config_path = './llama-13b-4bit/'
-model_path = './llama-13b-4bit.pt'
+
+parser = argparse.ArgumentParser(
+    prog=__file__.split(os.path.sep)[-1],
+    description="Lora Inference",
+)
+parser.add_argument("--config_dir", default="llama-13b-4bit", required=False,
+    help="Path to the config.json, tokenizer_config.json, etc. Default: %(default)s"
+)
+parser.add_argument("--model_path", default="./llama-13b-4bit.pt", required=False,
+    help="Path to the quantized model in huggingface format. Default: %(default)s"
+)
+parser.add_argument("--lora_dir", default="alpaca_lora", required=False,
+    help="Directory of fine-tuned lora results. Default: %(default)s"
+)
+parser.add_argument("--prompt", default="I think the meaning of life is", required=False,
+    help="Prompt for model inference. Default: %(default)s"
+)
+args = vars(parser.parse_args())
+
+config_path = args['config_dir']
+model_path = args['model_path']
+lora_path = args['lora_dir']
+prompt = args['prompt']
 model, tokenizer = load_llama_model_4bit_low_ram(config_path, model_path, groupsize=-1)
 
 print('Fitting 4bit scales and zeros to half')
@@ -21,7 +43,6 @@ from amp_wrapper import AMPWrapper
 wrapper = AMPWrapper(model)
 wrapper.apply_generate()
 
-prompt = '''I think the meaning of life is'''
 batch = tokenizer(prompt, return_tensors="pt", add_special_tokens=False)
 batch = {k: v.cuda() for k, v in batch.items()}
 
@@ -30,10 +51,11 @@ with torch.no_grad():
     generated = model.generate(inputs=batch["input_ids"],
                                do_sample=True, use_cache=True,
                                repetition_penalty=1.1,
-                               max_new_tokens=20,
+                               max_new_tokens=200,
                                temperature=0.9,
                                top_p=0.95,
-                               top_k=40,
+                            #    top_k=40,
+                               top_k=20000,
                                return_dict_in_generate=True,
                                output_attentions=False,
                                output_hidden_states=False,
