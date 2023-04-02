@@ -30,7 +30,7 @@ config_path = args['config_dir']
 model_path = args['model_path']
 lora_path = args['lora_dir']
 prompt = args['prompt']
-model, tokenizer = load_llama_model_4bit_low_ram(config_path, model_path, groupsize=-1)
+model, tokenizer = load_llama_model_4bit_low_ram(config_path, model_path, lora_path=lora_path, groupsize=-1)
 
 print('Fitting 4bit scales and zeros to half')
 model.half()
