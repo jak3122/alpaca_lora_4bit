@@ -3,7 +3,7 @@ import sys
 import argparse
 import time
 import torch
-from autograd_4bit import load_llama_model_4bit_low_ram, Autograd4bitQuantLinear
+from autograd_4bit import load_llama_model_4bit_low_ram, load_llama_model_4bit_low_ram_and_offload_to_cpu, Autograd4bitQuantLinear
 
 parser = argparse.ArgumentParser(
     prog=__file__.split(os.path.sep)[-1],
@@ -24,13 +24,18 @@ parser.add_argument("--prompt", default="I think the meaning of life is", requir
 parser.add_argument("--n_tokens", default=200, type=int, help="Number of tokens to generate. Default: %(default)s")
 parser.add_argument("--temp", default=0.7, type=float, help="Temperature. Default: %(default)s")
 parser.add_argument("--top_p", default=0.95, type=float, help="Top_p. Default: %(default)s")
+parser.add_argument("--cpu", action="store_true", required=False, help="CPU offloading. Default: %(default)s")
 args = vars(parser.parse_args())
 
 config_path = args['config_dir']
 model_path = args['model_path']
 lora_path = args['lora_dir']
 prompt = args['prompt']
-model, tokenizer = load_llama_model_4bit_low_ram(config_path, model_path, lora_path=lora_path, groupsize=-1)
+if args['cpu']:
+    print('Loading model with CPU offload...')
+    model, tokenizer = load_llama_model_4bit_low_ram_and_offload_to_cpu(config_path, model_path, lora_path=lora_path, groupsize=-1)
+else:
+    model, tokenizer = load_llama_model_4bit_low_ram(config_path, model_path, lora_path=lora_path, groupsize=-1)
 
 print('Fitting 4bit scales and zeros to half')
 model.half()

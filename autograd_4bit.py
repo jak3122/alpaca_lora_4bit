@@ -160,7 +160,7 @@ def load_llama_model_4bit_low_ram_and_offload_to_cpu(config_path, model_path, lo
     from transformers import LlamaConfig, LlamaForCausalLM, LlamaTokenizer
 
     if max_memory is None:
-        max_memory = {0: '24Gib', 'cpu': '48Gib'}
+        max_memory = {0: '16Gib', 'cpu': '60Gib'}
 
     print("Loading Model ...")
     t0 = time.time()
