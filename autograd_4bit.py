@@ -160,7 +160,7 @@ def load_llama_model_4bit_low_ram_and_offload_to_cpu(config_path, model_path, lo
     from transformers import LlamaConfig, LlamaForCausalLM, LlamaTokenizer
 
     if max_memory is None:
-        max_memory = {0: '16Gib', 'cpu': '60Gib'}
+        max_memory = {0: '12Gib', 'cpu': '40Gib'}
 
     print("Loading Model ...")
     t0 = time.time()
@@ -192,12 +192,7 @@ def load_llama_model_4bit_low_ram_and_offload_to_cpu(config_path, model_path, lo
     model.seqlen = seqlen
 
     print('Apply half ...')
-    for n, m in model.named_modules():
-        if isinstance(m, Autograd4bitQuantLinear) or ((lora_path is not None) and isinstance(m, Linear4bitLt)):
-            if m.groupsize == -1:
-                m.zeros = m.zeros.half()
-            m.scales = m.scales.half()
-            m.bias = m.bias.half()
+    model_to_half(model)
 
     print('Dispatching model ...')
     device_map = accelerate.infer_auto_device_map(model, max_memory=max_memory, no_split_module_classes=["LlamaDecoderLayer"])

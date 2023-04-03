@@ -4,6 +4,7 @@ import argparse
 import time
 import torch
 from autograd_4bit import load_llama_model_4bit_low_ram, load_llama_model_4bit_low_ram_and_offload_to_cpu, Autograd4bitQuantLinear
+from transformers import TextStreamer
 
 parser = argparse.ArgumentParser(
     prog=__file__.split(os.path.sep)[-1],
@@ -53,20 +54,22 @@ wrapper.apply_generate()
 
 batch = tokenizer(prompt, return_tensors="pt", add_special_tokens=False)
 batch = {k: v.cuda() for k, v in batch.items()}
+streamer = TextStreamer(tokenizer)
 
 start = time.time()
 with torch.no_grad():
     generated = model.generate(inputs=batch["input_ids"],
                                do_sample=True, use_cache=True,
                                repetition_penalty=1.1,
-                               min_new_tokens=args["n_tokens"],
+                               max_new_tokens=args["n_tokens"],
                                temperature=args["temp"],
                                top_p=args["top_p"],
                                top_k=20000,
                                return_dict_in_generate=True,
                                output_attentions=False,
                                output_hidden_states=False,
-                               output_scores=False)
+                               output_scores=False,
+                               streamer=streamer)
 result_text = tokenizer.decode(generated['sequences'].cpu().tolist()[0])
 end = time.time()
 print(result_text)
