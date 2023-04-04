@@ -93,15 +93,14 @@ class TrainTxt(ATrainData):
         r_b = ''
         new_rows = []
         for row in rows:
-            tokens = tokenize(r_b)
             if len(r_b) == 0:
                 r_b += row
             else:
                 r_b += '\n' + row
-            if len(tokens) > thd:
+            if len(tokenize(r_b)['input_ids']) > thd:
                 new_rows.append(r_b)
                 r_b = ''
-        if len(tokens) > thd:
+        if len(tokenize(r_b)['input_ids']) > thd:
             new_rows.append(r_b)
             r_b = ''
         return new_rows
