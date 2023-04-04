@@ -89,18 +89,19 @@ class TrainTxt(ATrainData):
         return d
 
     @classmethod
-    def format_new_rows(cls, rows, thd=128):
+    def format_new_rows(cls, rows, thd=128, tokenize=None):
         r_b = ''
         new_rows = []
         for row in rows:
+            tokens = tokenize(r_b)
             if len(r_b) == 0:
                 r_b += row
             else:
                 r_b += '\n' + row
-            if len(r_b) > thd:
+            if len(tokens) > thd:
                 new_rows.append(r_b)
                 r_b = ''
-        if len(r_b) > thd:
+        if len(tokens) > thd:
             new_rows.append(r_b)
             r_b = ''
         return new_rows
@@ -119,7 +120,7 @@ class TrainTxt(ATrainData):
             txt = txt.replace('\r\n', '\n')
             rows = [r for r in txt.split('\n') if r != '']
         if thd != -1:
-            rows = self.format_new_rows(rows, thd=thd)
+            rows = self.format_new_rows(rows, thd=thd, tokenize=lambda x: self.tokenize(x, use_eos_token=use_eos_token))
         data = Dataset.from_dict({"input": rows})
         data = data.shuffle().map(lambda x: self.tokenize(x["input"], use_eos_token=use_eos_token))
         print('Train Data: {:.2f}%'.format(self.exceed_count / len(data) * 100), 'outliers')

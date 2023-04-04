@@ -10,13 +10,13 @@ parser = argparse.ArgumentParser(
     prog=__file__.split(os.path.sep)[-1],
     description="Lora Inference",
 )
-parser.add_argument("--config_dir", default="llama-13b-4bit", required=False,
+parser.add_argument("--config_dir", default="llama-30b-4bit", required=False,
     help="Path to the config.json, tokenizer_config.json, etc. Default: %(default)s"
 )
-parser.add_argument("--model_path", default="./llama-13b-4bit.pt", required=False,
+parser.add_argument("--model_path", default="./llama-30b-4bit.pt", required=False,
     help="Path to the quantized model in huggingface format. Default: %(default)s"
 )
-parser.add_argument("--lora_dir", default="alpaca_lora", required=False,
+parser.add_argument("--lora_dir", default="lora", required=False,
     help="Directory of fine-tuned lora results. Default: %(default)s"
 )
 parser.add_argument("--prompt", default="I think the meaning of life is", required=False,

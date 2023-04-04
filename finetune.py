@@ -91,6 +91,8 @@ if not ft_config.skip:
     data.prepare_data(thd=ft_config.txt_row_thd, use_eos_token=ft_config.use_eos_token)
     print(f"Train data size: {len(data.train_data)}")
     print(f"Train data [0]: {data.train_data[0]}")
+    print(f"len of train data [0]: {len(data.train_data[0])}")
+    print(f"len of tokens in train data [0]: {len(data.train_data[0]['input_ids'])}")
     ####
 
     # Use gradient checkpointing
