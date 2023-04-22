@@ -322,4 +322,9 @@ class TrainChess(ATrainData):
         data = Dataset.from_dict({"input": rows})
         data = data.shuffle().map(lambda x: self.tokenize(x["input"], use_eos_token=use_eos_token))
         print('Train Data: {:.2f}%'.format(self.exceed_count / len(data) * 100), 'outliers')
+        print(f"Train data size: {len(data)}")
+        print(f"Train data [0]: {data[0]}")
+        print(f"len of train data [0]: {len(data[0]['input'])}")
+        print(f"len of tokens in train data [0]: {len(data[0]['input_ids'])}")
+        print(f"shortest training example: {min([(len(d['input_ids']), d['input']) for d in data], key=lambda x: x[0])}")
         self.train_data = data
