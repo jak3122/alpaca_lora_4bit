@@ -80,6 +80,8 @@ if not ft_config.skip:
     if ft_config.ds_type == "txt" and not ft_config.skip:
         #### LLaMa
         data = train_data.TrainTxt(ft_config.dataset, ft_config.val_set_size, tokenizer, ft_config.cutoff_len)
+    elif ft_config.ds_type == "pgn" and not ft_config.skip:
+        data = train_data.TrainChess(ft_config.dataset, ft_config.val_set_size, tokenizer, ft_config.cutoff_len)
     elif ft_config.ds_type == "alpaca" and not ft_config.skip:
         #### Stanford Alpaca-like Data
         data = train_data.TrainSAD(ft_config.dataset, ft_config.val_set_size, tokenizer, ft_config.cutoff_len)
@@ -93,6 +95,8 @@ if not ft_config.skip:
     print(f"Train data [0]: {data.train_data[0]}")
     print(f"len of train data [0]: {len(data.train_data[0])}")
     print(f"len of tokens in train data [0]: {len(data.train_data[0]['input_ids'])}")
+    print(f"Min tokens in train data: {min([len(x['input_ids']) for x in data.train_data])}")
+    print(f"Max tokens in train data: {max([len(x['input_ids']) for x in data.train_data])}")
     ####
 
     # Use gradient checkpointing
