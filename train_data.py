@@ -317,7 +317,7 @@ class TrainChess(ATrainData):
         with open(self.dataset, 'r', encoding='utf8') as file:
             txt = file.read()
         txt = txt.replace('\r\n', '\n')
-        rows = [r.strip() for r in txt.split('###') if r != '']
+        rows = [r.strip() for r in txt.split('###') if len(r) > 10]
 
         data = Dataset.from_dict({"input": rows})
         data = data.shuffle().map(lambda x: self.tokenize(x["input"], use_eos_token=use_eos_token))

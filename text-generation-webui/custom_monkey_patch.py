@@ -7,9 +7,9 @@ from peft.tuners.lora import Linear4bitLt
 
 def load_model_llama(*args, **kwargs):
 
-    config_path = '../llama-13b-4bit/'
-    model_path = '../llama-13b-4bit.pt'
-    lora_path = '../alpaca13b_lora/'
+    config_path = '../llama-30b-4bit/'
+    model_path = '../llama-30b-4bit.pt'
+    lora_path = '../lora/'
 
     print("Loading {} ...".format(model_path))
     t0 = time.time()
@@ -35,9 +35,9 @@ def load_model_llama(*args, **kwargs):
 from modules import models
 from modules import shared
 models.load_model = load_model_llama
-shared.args.model = 'llama-13b-4bit'
-shared.settings['name1'] = 'You'
-shared.settings['name2'] = 'Assistant'
+shared.args.model = 'llama-30b-4bit'
+shared.settings['name1'] = 'Model'
+# shared.settings['name2'] = 'Assistant'
 shared.settings['chat_prompt_size_max'] = 2048
 shared.settings['chat_prompt_size'] = 2048
 
